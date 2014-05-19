@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<!--Generated with Mod Manager (c) 2013 Yoshi2889-->
+<modification xmlns:smf="http://www.simplemachines.org/" xmlns="http://www.simplemachines.org/xml/modification">
+    <id>margarett:BlockCensoredWords</id>
+    <version>1.00</version>
+    <file name="$languagedir/Admin.english.php">
+        <operation>
+            <search position="before"><![CDATA[$txt['censor_whole_words'] = 'Check only whole words';
+]]></search>
+            <add><![CDATA[$txt['block_censored_words'] = 'Block censored words';
+]]></add>
+        </operation>
+    </file>
+    <file name="$languagedir/Errors.english.php">
+        <operation>
+            <search position="after"><![CDATA[$txt['error_long_name'] = 'The name you tried to use was too long.';
+]]></search>
+            <add><![CDATA[$txt['error_bad_words'] = 'You are using forbidden words, please improve your language';
+]]></add>
+        </operation>
+    </file>
+    <file name="$sourcedir/ManagePosts.php">
+        <operation>
+            <search position="before"><![CDATA[			'censorIgnoreCase' => empty($_POST['censorIgnoreCase']) ? '0' : '1',
+]]></search>
+            <add><![CDATA[			'block_censored_words' => empty($_POST['block_censored_words']) ? '0' : '1',
+]]></add>
+        </operation>
+    </file>
+    <file name="$sourcedir/Post.php">
+        <operation>
+            <search position="before"><![CDATA[		// Set up the inputs for the form.
+		$form_subject = strtr($smcFunc['htmlspecialchars']($_REQUEST['subject']), array("\r" => '', "\n" => '', "\t" => ''));
+		$form_message = $smcFunc['htmlspecialchars']($_REQUEST['message'], ENT_QUOTES);
+]]></search>
+            <add><![CDATA[		//Don't use nasty language, please...
+		if (!empty($modSettings['block_censored_words'])) {
+			$check_censor = false;
+			$aux = $form_subject;
+			censorText($aux);
+			if (strcmp($aux, $form_subject) != 0) {
+				$check_censor = true;	
+			}
+			if (!$check_censor) {
+				$aux = $form_message;
+				censorText($aux);
+				if (strcmp($aux, $form_message) != 0) {
+					$check_censor = true;
+				}
+			}
+			if ($check_censor)
+				$context['post_error']['bad_words'] = true;
+			unset($aux);
+			unset($check_sensor);
+		}
+]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[	// If the user isn't a guest, get his or her name and email.
+	elseif (!isset($_REQUEST['msg']))
+	{
+		$_POST['guestname'] = $user_info['username'];
+		$_POST['email'] = $user_info['email'];
+	}
+
+]]></search>
+            <add><![CDATA[	//Check for nasty words when submitting a message
+	if (!empty($modSettings['block_censored_words'])) {
+		$check_censor = false;
+		$aux = $_POST['subject'];
+		censorText($aux);
+		if (strcmp($aux, $_POST['subject']) != 0) {
+			$check_censor = true;	
+		}
+		if (!$check_censor) {
+			$aux = $_POST['message'];
+			censorText($aux);
+			if (strcmp($aux, $_POST['message']) != 0) {
+				$check_censor = true;	
+			}		
+		}
+		if ($check_censor)
+			$post_errors[] = 'bad_words';
+		unset($aux);
+		unset($check_censor);
+	}
+
+]]></add>
+        </operation>
+    </file>
+    <file name="$themedir/Admin.template.php">
+        <operation>
+            <search position="before"><![CDATA[							<input type="checkbox" name="censorIgnoreCase" value="1" id="censorIgnoreCase_check"', empty($modSettings['censorIgnoreCase']) ? '' : ' checked="checked"', ' class="input_check" />
+						</dd>
+]]></search>
+            <add><![CDATA[						<dt>
+							<strong><label for="block_censored_words_check">', $txt['block_censored_words'], ':</label></strong>
+						</dt>						
+						<dd>
+							<input type="checkbox" name="block_censored_words" value="1" id="block_censored_words_check"', empty($modSettings['block_censored_words']) ? '' : ' checked="checked"', ' class="input_check" />
+						</dd>
+]]></add>
+        </operation>
+    </file>
+</modification>
