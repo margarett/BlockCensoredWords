@@ -12,6 +12,14 @@
 ]]></add>
         </operation>
     </file>
+   <file name="$languagedir/Admin.russian-utf8.php">
+        <operation>
+            <search position="before"><![CDATA[$txt['censor_whole_words'] = 'Check only whole words';
+]]></search>
+            <add><![CDATA[$txt['block_censored_words'] = 'Блокировать нецензурные слова';
+]]></add>
+        </operation>
+    </file>	
     <file name="$languagedir/Errors.english.php">
         <operation>
             <search position="after"><![CDATA[$txt['error_long_name'] = 'The name you tried to use was too long.';
@@ -20,6 +28,14 @@
 ]]></add>
         </operation>
     </file>
+    <file name="$languagedir/Errors.russian-utf8.php">
+        <operation>
+            <search position="after"><![CDATA[$txt['error_long_name'] = 'The name you tried to use was too long.';
+]]></search>
+            <add><![CDATA[$txt['error_bad_words'] = 'Вы используете нецензурные слова, выражайтесь приличнее';
+]]></add>
+        </operation>
+    </file>	
     <file name="$sourcedir/ManagePosts.php">
         <operation>
             <search position="before"><![CDATA[			'censorIgnoreCase' => empty($_POST['censorIgnoreCase']) ? '0' : '1',
